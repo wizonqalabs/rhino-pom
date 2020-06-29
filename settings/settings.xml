@@ -7,6 +7,18 @@
     </activeProfiles>
     <profiles>
         <profile>
+            <id>ossrh</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <gpg.homedir>${env.GPG_PATH}</gpg.homedir>
+                <gpg.executable>gpg</gpg.executable>
+                <gpg.keyname>${env.GPG_KEY}</gpg.keyname>
+                <gpg.passphrase>${env.GPG_PASS}</gpg.passphrase>
+            </properties>
+        </profile>
+        <profile>
             <id>github</id>
             <repositories>
                 <repository>
@@ -28,6 +40,11 @@
         </profile>
     </profiles>
     <servers>
+        <server>
+            <id>ossrh</id>
+            <username>${env.OSSRH_USER}</username>
+            <password>${env.OSSRH_PASS}</password>
+        </server>
         <server>
             <id>github</id>
             <username>WasiqB</username>

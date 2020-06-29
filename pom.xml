@@ -39,6 +39,7 @@
     <developers>
         <developer>
             <name>Wasiq Bhamla</name>
+            <url>https://github.com/WasiqB</url>
             <roles>
                 <role>Lead Maintainer</role>
                 <role>Developer</role>
@@ -89,7 +90,11 @@
         <mvn.source>3.2.1</mvn.source>
         <mvn.jdoc>3.2.0</mvn.jdoc>
         <mvn.surefire>3.0.0-M5</mvn.surefire>
+        <mvn.version>2.7</mvn.version>
+        <mvn.gpg>1.6</mvn.gpg>
         <jacoco>0.8.5</jacoco>
+        <sonar>5.14.0.18788</sonar>
+        <nexus>1.6.8</nexus>
         <checkstyle>3.1.1</checkstyle>
         <duraspace.checkstyle>1.1.0</duraspace.checkstyle>
         <puppycrawl.checkstyle>8.33</puppycrawl.checkstyle>
@@ -199,6 +204,14 @@
                 </configuration>
             </plugin>
             <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>versions-maven-plugin</artifactId>
+                <version>${mvn.version}</version>
+                <configuration>
+                    <generateBackupPoms>false</generateBackupPoms>
+                </configuration>
+            </plugin>
+            <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>${jacoco}</version>
@@ -262,4 +275,73 @@
             </plugin>
         </plugins>
     </build>
+
+
+    <profiles>
+        <profile>
+            <id>coverage-per-test</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <version>${mvn.surefire}</version>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>test</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <suiteXmlFiles>
+                                <suiteXmlFile>${suite-xml}</suiteXmlFile>
+                            </suiteXmlFiles>
+                            <argLine>${argLine} ${surefireArgLine}</argLine>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+            <dependencies>
+                <dependency>
+                    <groupId>org.sonarsource.java</groupId>
+                    <artifactId>sonar-jacoco-listeners</artifactId>
+                    <version>${sonar}</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>release</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>${mvn.gpg}</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.sonatype.plugins</groupId>
+                        <artifactId>nexus-staging-maven-plugin</artifactId>
+                        <version>${nexus}</version>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <serverId>ossrh</serverId>
+                            <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                            <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
